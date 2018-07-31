@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import javax.transaction.Transactional;
 
 /**
  * @author wensiao
@@ -14,13 +18,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer>,JpaSpecificationExecutor<User> {
 
-    User findByName(String name);
+
     /**
-     * 分页查询加模糊查询
+     * 按id更新
      * @param name
-     * @param pageable
+     * @param age
+     * @param id
      * @return
      */
-    Page<User> findByNameLike(String name, Pageable pageable);
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update user p set p.name =?1,p.age =?2 where p.id = ?3",nativeQuery = true)
+    int updateStatusById( String name, Integer age, Integer id);
 
 }
